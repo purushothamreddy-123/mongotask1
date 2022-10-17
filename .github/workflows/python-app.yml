@@ -31,6 +31,4 @@ jobs:
         pip install mongoengine
         pip install healthcheck
        
-    - name: Test with pytest
-      run: |
-        pytest
+ 
