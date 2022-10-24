@@ -1,9 +1,15 @@
+from http import client
 from itertools import product
+from urllib import response
 from flask import Flask, request, jsonify
+from flask_json import FlaskJSON
 from flask_mongoengine import MongoEngine
 import json
 from healthcheck import HealthCheck
+
 app = Flask(__name__)
+json = FlaskJSON(app)
+
 health = HealthCheck()
 
 app.config['MONGODB_SETTINGS'] = {
@@ -28,6 +34,13 @@ class dpr(db.Document):
 def root_path():
     return("sita")
 
+def test_movie():
+  client = app.test_client()
+  url ='/'
+  response = client.get(url)
+  assert response.get_data() == b'sita'
+
+
 
 @app.route('/user/', methods=['GET'])
 def get_user():
@@ -36,6 +49,13 @@ def get_user():
         return jsonify({'error': 'data not found'})
     else:
         return jsonify(contact)
+
+
+def test_get():
+    client = app.test_client()
+    url ='/user/'
+    response =client.get(url)
+    assert response. get_data()
 
 
 
@@ -47,6 +67,13 @@ def add_user():
                 sub=record['sub'])
     contact.save()
     return jsonify(contact)
+
+
+def test_post():
+    client = app.test_client()
+    url = '/user/'
+    response = client.post(url)
+    assert response.get_data()
 
 
 @app.route('/user/<id>', methods=['PUT'])
@@ -61,6 +88,13 @@ def Update_user(id):
                     sub=record["sub"])
     return jsonify(contact)
 
+def test_put():
+    client = app.test_client()
+    url = '/user/<id>'
+    response = client.put(url)
+    assert response.status_code==500
+
+
 @app.route('/user/<id>', methods=['DELETE'])
 def delete_user(id):
     contact = dpr.objects(id=id)
@@ -69,6 +103,15 @@ def delete_user(id):
     else:
         contact.delete()
     return jsonify(contact)
+
+def test_delete():
+    client = app.test_client()
+    url = '/user/'
+    response = client.get(url)
+    assert response.get_data()
+
+
+
 
 
 class car(db.Document):
